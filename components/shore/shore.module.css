@@ -1,0 +1,213 @@
+/* Real :hover/:focus-visible rules translating the design's style-hover /
+   style-focus pseudo-state attributes (an artifact of the .dc preview
+   runtime that doesn't exist in plain CSS). */
+
+@keyframes shBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+.bob {
+  animation: shBob 9s ease-in-out infinite;
+}
+
+.skipLink {
+  position: fixed;
+  left: 16px;
+  top: -64px;
+  z-index: 130;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 8px 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  transition: top 0.3s ease;
+}
+
+.skipLink:focus-visible {
+  top: 16px;
+}
+
+.navLink {
+  padding-bottom: 3px;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.navLink:hover {
+  border-bottom-color: var(--rule);
+}
+
+.navLinkActive {
+  border-bottom-color: var(--ink) !important;
+}
+
+.underlineLink {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 4px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.underlineLink:hover {
+  color: var(--sea);
+  border-bottom-color: var(--sea);
+}
+
+.plainButton {
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--ink);
+  padding: 0 0 4px;
+  font: inherit;
+  font-family: var(--mono);
+  color: var(--ink);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.plainButton:hover {
+  color: var(--sea);
+  border-bottom-color: var(--sea);
+}
+
+.plainButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.quietLink {
+  color: var(--shore-muted);
+  transition: color 0.2s ease;
+}
+
+.quietLink:hover {
+  color: var(--sea);
+}
+
+.pillarRow {
+  border-top: 1px solid var(--rule);
+  padding: 18px 0;
+  transition: padding-left 0.4s ease;
+}
+
+.pillarRow:hover {
+  padding-left: 14px;
+}
+
+.pillarRow:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+
+.systemRow {
+  border-top: 1px solid var(--rule);
+  padding: 26px 0;
+  transition: padding-left 0.45s ease;
+}
+
+.systemRow:hover {
+  padding-left: 16px;
+}
+
+.systemRow:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+
+.formField {
+  margin-top: 6px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  padding: 9px 0;
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.formField:focus {
+  border-bottom-color: var(--sea);
+}
+
+@keyframes shoreOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shoreOverlayOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes shorePanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shorePanelOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 118;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(236, 233, 227, 0.82);
+  backdrop-filter: blur(8px);
+}
+
+.modalOverlay[data-state='open'] {
+  animation: shoreOverlayIn 0.3s ease;
+}
+
+.modalOverlay[data-state='closed'] {
+  animation: shoreOverlayOut 0.3s ease;
+}
+
+.modalPanel {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--rule), 0 30px 70px rgba(21, 24, 27, 0.14);
+  padding: 30px;
+}
+
+.modalPanel[data-state='open'] {
+  animation: shorePanelIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.modalPanel[data-state='closed'] {
+  animation: shorePanelOut 0.3s ease;
+}

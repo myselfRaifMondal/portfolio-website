@@ -37,11 +37,20 @@
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #1a1a1a;
   --sidebar-ring: #4a4a4a;
+
+  /* Shore design tokens */
+  --paper: #ece9e3;
+  --ink: #15181b;
+  --sea: #1d5c67;
+  --sea-2: #47639a;
+  --sand: #e0d5c2;
+  --rule: rgba(21, 24, 27, 0.15);
+  --shore-muted: rgba(21, 24, 27, 0.58);
+  --serif: var(--font-newsreader), Georgia, serif;
+  --mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
 }
 
 @theme inline {
-  --font-sans: 'Geist', 'Geist Fallback';
-  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -85,118 +94,33 @@
     @apply border-border outline-ring/50;
   }
   html {
-    @apply bg-background;
+    background: var(--paper);
   }
   body {
-    @apply bg-background text-foreground;
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
   }
-}
-
-@layer utilities {
-  .section-shell {
-    @apply w-full border-t border-[#1f1f1f] py-28 md:py-40;
+  a {
+    color: inherit;
+    text-decoration: none;
   }
-
-  .content-shell {
-    @apply mx-auto w-full max-w-5xl px-6 md:px-10;
+  a:hover {
+    color: var(--sea);
   }
-
-  .eyebrow {
-    @apply text-[11px] uppercase tracking-[0.18em] text-[#8b8b88];
+  ::selection {
+    background: rgba(29, 92, 103, 0.22);
   }
-
-  .section-title {
-    @apply text-4xl font-semibold leading-tight tracking-[-0.025em] text-foreground md:text-5xl;
-  }
-
-  .section-lead {
-    @apply max-w-3xl text-base leading-relaxed text-[#bebeb8] md:text-lg;
-  }
-
-  .institution-card {
-    @apply rounded-sm border border-[#252525] bg-[#0b0b0b] p-6 md:p-8 transition-[transform,border-color,background-color,box-shadow] duration-300 ease-out will-change-transform;
-  }
-
-  .institution-card:hover {
-    @apply -translate-y-1 border-[#3a3a3a] bg-[#0d0d0d] shadow-[0_14px_40px_rgba(0,0,0,0.35)];
-  }
-
-  .interactive-soft {
-    @apply transition-[transform,opacity,border-color,background-color,color,box-shadow] duration-300 ease-out;
-  }
-
-  .interactive-soft:hover {
-    transform: translateY(-1px);
-  }
-
-  .institution-grid {
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    background-size: 44px 44px;
-  }
-
-  .microstructure-line {
-    @apply h-px bg-gradient-to-r from-transparent via-[#4b4b4b] to-transparent;
-  }
-
-  .quiet-link {
-    @apply text-[#bfbfba] transition-[color,transform] duration-200 hover:text-foreground;
-  }
-
-  .quiet-link:hover {
-    transform: translateY(-1px);
-  }
-
-  .subtle-border {
-    @apply border border-gray-900;
-  }
-
-  .clean-panel {
-    @apply border border-gray-800 rounded;
-  }
-
-  .fade-in {
-    animation: fadeIn 0.8s ease-out;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  .subtle-hover {
-    @apply transition-opacity duration-200 hover:opacity-70;
-  }
-
-  .text-muted {
-    @apply text-gray-600;
-  }
-
-  .text-secondary {
-    @apply text-gray-700;
-  }
-
-  .border-subtle {
-    @apply border border-gray-900;
+  :focus-visible {
+    outline: 2px solid var(--sea);
+    outline-offset: 3px;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .institution-card,
-    .interactive-soft,
-    .quiet-link {
-      transition-duration: 0ms;
-    }
-
-    .institution-card:hover,
-    .interactive-soft:hover,
-    .quiet-link:hover {
-      transform: none;
-      box-shadow: none;
+    * {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
     }
   }
 }

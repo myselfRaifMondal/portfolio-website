@@ -1,14 +1,22 @@
-import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import type { Metadata, Viewport } from 'next'
+import { Newsreader, IBM_Plex_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const newsreader = Newsreader({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  variable: '--font-newsreader',
+});
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-ibm-plex-mono',
+});
 
 export const metadata: Metadata = {
   title: 'Raif Mondal | Founder of IndiQuant | Quantitative AI',
-  description: 'Raif Mondal is building IndiQuant: autonomous quantitative intelligence systems for institutional capital markets.',
+  description: 'Raif Mondal — founder of IndiQuant. Autonomous quantitative intelligence systems for institutional capital markets.',
   generator: 'v0.app',
   openGraph: {
     title: 'Raif Mondal | Building IndiQuant',
@@ -39,14 +47,18 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport: Viewport = {
+  themeColor: '#ece9e3',
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark bg-background">
-      <body className="font-sans antialiased bg-background text-foreground overflow-x-hidden">
+    <html lang="en" className={`${newsreader.variable} ${ibmPlexMono.variable}`}>
+      <body className="antialiased overflow-x-hidden">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
