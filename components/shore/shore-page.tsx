@@ -381,7 +381,7 @@ export function ShorePage() {
               </a>
             ))}
           </nav>
-          <a href="https://calendar.app.google/pG5Qv3GQFFZvej3h7" target="_blank" rel="noopener" className={styles.underlineLink} style={{ fontFamily: 'var(--mono)', fontSize: 12 }}>
+          <a href="https://calendly.com/raifmondal" target="_blank" rel="noopener" className={styles.underlineLink} style={{ fontFamily: 'var(--mono)', fontSize: 12 }}>
             Book a meeting
           </a>
         </div>
@@ -585,7 +585,7 @@ export function ShorePage() {
             <button type="button" onClick={() => setModalOpen(true)} className={styles.plainButton} style={{ fontSize: 'inherit' }}>
               Write to me
             </button>
-            <a href="https://calendar.app.google/pG5Qv3GQFFZvej3h7" target="_blank" rel="noopener" className={styles.underlineLink}>
+            <a href="https://calendly.com/raifmondal" target="_blank" rel="noopener" className={styles.underlineLink}>
               Book a meeting
             </a>
             <a href="https://linkedin.com/in/raifmondal" target="_blank" rel="noopener" className={styles.underlineLink}>
