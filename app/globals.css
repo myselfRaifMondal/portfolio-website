@@ -38,16 +38,17 @@
   --sidebar-border: #1a1a1a;
   --sidebar-ring: #4a4a4a;
 
-  /* Shore design tokens */
-  --paper: #ece9e3;
-  --ink: #15181b;
-  --sea: #1d5c67;
-  --sea-2: #47639a;
-  --sand: #e0d5c2;
-  --rule: rgba(21, 24, 27, 0.15);
-  --shore-muted: rgba(21, 24, 27, 0.58);
-  --serif: var(--font-newsreader), Georgia, serif;
-  --mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  /* Issue design tokens: cream stock, black ink, racing green, a little brass */
+  --paper: #f4f0e8;
+  --paper-deep: #ebe5d9;
+  --ink: #141414;
+  --ink-soft: rgba(20, 20, 20, 0.74);
+  --ink-faint: rgba(20, 20, 20, 0.5);
+  --green: #1f3b2d;
+  --brass: #a07f4a;
+  --rule: rgba(20, 20, 20, 0.16);
+  --display: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  --sans: var(--font-instrument-sans), 'Instrument Sans', system-ui, sans-serif;
 }
 
 @theme inline {
@@ -95,28 +96,35 @@
   }
   html {
     background: var(--paper);
+    color-scheme: light;
+    scroll-padding-top: 72px;
   }
   body {
     margin: 0;
     background: var(--paper);
     color: var(--ink);
-    font-family: var(--serif);
+    font-family: var(--sans);
   }
   a {
     color: inherit;
     text-decoration: none;
   }
   a:hover {
-    color: var(--sea);
+    color: var(--green);
   }
   ::selection {
-    background: rgba(29, 92, 103, 0.22);
+    background: rgba(31, 59, 45, 0.18);
   }
   :focus-visible {
-    outline: 2px solid var(--sea);
+    outline: 1px solid var(--green);
     outline-offset: 3px;
   }
 
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
     * {
       animation: none !important;

@@ -1,5 +1,5 @@
-import { ShorePage } from '@/components/shore/shore-page';
+import { IssuePage } from '@/components/issue/issue-page';
 
 export default function Home() {
-  return <ShorePage />;
+  return <IssuePage />;
 }
