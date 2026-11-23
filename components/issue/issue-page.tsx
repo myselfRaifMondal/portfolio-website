@@ -6,13 +6,11 @@ import { ContactDialog } from './contact-dialog';
 import { Story } from './story';
 import { Pantheon } from './pantheon';
 import { Oracle } from './oracle';
-import { BrassCursor } from './cursor';
 import { BookingDialog } from './booking-dialog';
 import { SmoothScroll } from './smooth-scroll';
 import { useLyre } from './use-lyre';
+import { EMAIL, GITHUB, LINKEDIN } from './site';
 import styles from './issue.module.css';
-
-const EMAIL = 'raifmondal@indiquantresearch.in';
 
 // Section ids and the magazine page each one "starts on", shown in the running header.
 const PAGES = [
@@ -50,11 +48,17 @@ function Arrow() {
   );
 }
 
-function Opener({ page, label, right }: { page: string; label: string; right?: string }) {
+function Opener({ page, label, right, headingId }: { page: string; label: string; right?: ReactNode; headingId?: string }) {
   return (
     <Reveal className={`${styles.opener} ${styles.kicker}`}>
       <span>p. {page}</span>
-      <span>{label}</span>
+      {headingId ? (
+        <h2 id={headingId} className={styles.openerHeading}>
+          {label}
+        </h2>
+      ) : (
+        <span>{label}</span>
+      )}
       <span>{right}</span>
     </Reveal>
   );
@@ -63,29 +67,52 @@ function Opener({ page, label, right }: { page: string; label: string; right?: s
 export function IssuePage() {
   const rootRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const [folio, setFolio] = useState('01');
+  const folioRef = useRef<HTMLSpanElement>(null);
+  const dockRef = useRef<HTMLButtonElement>(null);
   const [writing, setWriting] = useState(false);
   const [booking, setBooking] = useState(false);
-  const [dock, setDock] = useState(false);
   const book = () => setBooking(true);
   const lyre = useLyre();
 
+  // Reveals use one IntersectionObserver; anything already scrolled past (a deep link, a fast jump) is shown at once.
   useEffect(() => {
-    const els = Array.from(rootRef.current?.querySelectorAll<HTMLElement>('[data-reveal]') ?? []);
+    const els = rootRef.current?.querySelectorAll<HTMLElement>('[data-reveal]') ?? [];
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting || e.boundingClientRect.top < 0) {
+            e.target.classList.add(styles.revealed);
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { rootMargin: '0px 0px -8% 0px' },
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  // Running header, progress line and phone dock are written straight to the DOM,
+  // so scrolling never re-renders the page (and its engraved SVGs).
+  useEffect(() => {
     let raf = 0;
+    let lastFolio = '';
+    let lastDock: boolean | null = null;
+    const sections = PAGES.map((p) => ({ el: document.getElementById(p.id), folio: p.folio }));
     const update = () => {
       raf = 0;
       const vh = window.innerHeight;
-      for (const el of els) {
-        if (!el.classList.contains(styles.revealed) && el.getBoundingClientRect().top < vh * 0.9) el.classList.add(styles.revealed);
-      }
       let f = '01';
-      for (const p of PAGES) {
-        const s = document.getElementById(p.id);
-        if (s && s.getBoundingClientRect().top < vh * 0.4) f = p.folio;
+      for (const s of sections) if (s.el && s.el.getBoundingClientRect().top < vh * 0.4) f = s.folio;
+      if (f !== lastFolio && folioRef.current) folioRef.current.textContent = `p. ${f} / 24`;
+      lastFolio = f;
+      const show = window.scrollY > vh * 0.8;
+      const dock = dockRef.current;
+      if (dock && show !== lastDock) {
+        dock.dataset.show = String(show);
+        dock.inert = !show;
+        lastDock = show;
       }
-      setFolio(f);
-      setDock(window.scrollY > vh * 0.8);
       const max = document.documentElement.scrollHeight - vh;
       if (progressRef.current) progressRef.current.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
     };
@@ -108,22 +135,21 @@ export function IssuePage() {
         Skip to contents
       </a>
       <SmoothScroll />
-      <BrassCursor />
 
       <header className={styles.header}>
         <div className={`${styles.wrap} ${styles.headerInner}`}>
           <a href="#cover" className={styles.headerMark}>
             Raif Mondal
           </a>
-          <span className={styles.folio} aria-label={`Page ${folio}`}>
-            p. {folio} / 24
+          <span ref={folioRef} className={styles.folio} aria-hidden="true">
+            p. 01 / 24
           </span>
           <div className={`${styles.headerRight} ${styles.kicker}`}>
             <a href="#contents" className={styles.hideSm}>
               Contents
             </a>
             <button type="button" className={`${styles.textButton} ${styles.kicker}`} aria-pressed={lyre.on} onClick={lyre.toggle}>
-              {lyre.on ? 'Sound on' : 'Sound'}
+              Sound
             </button>
             <button type="button" className={`${styles.bookButton} ${styles.headerBook}`} onClick={book}>
               Book a meeting
@@ -142,9 +168,7 @@ export function IssuePage() {
             <span>The Founder Issue</span>
           </div>
           <h1 className={styles.masthead}>
-            <Reveal as="span" style={{ display: 'block' }}>
-              Raif <em>Mondal</em>
-            </Reveal>
+            Raif <em>Mondal</em>
           </h1>
           <div className={styles.coverGrid}>
             <Reveal delay={200}>
@@ -187,7 +211,7 @@ export function IssuePage() {
           <Reveal>
             <div className={styles.kicker}>In this issue</div>
             <h2 id="contents-t" className={styles.bigTitle}>
-              Con&shy;tents<em>.</em>
+              Con&shy;tents
             </h2>
           </Reveal>
           <ol className={styles.toc}>
@@ -204,7 +228,15 @@ export function IssuePage() {
         </section>
 
         <div className={styles.wrap}>
-          <Opener page="04" label="The feature" right="Scroll to read" />
+          <Opener
+            page="04"
+            label="The feature"
+            right={
+              <a href="#pantheon" className={styles.skipFeature}>
+                Skip the feature
+              </a>
+            }
+          />
         </div>
         <Story />
 
@@ -213,7 +245,7 @@ export function IssuePage() {
             <div>
               <div className={styles.kicker}>End of feature</div>
               <p className={styles.bookBandTitle}>
-                The rest is better <em>in conversation.</em>
+                The rest is better in conversation.
               </p>
             </div>
             <button type="button" className={styles.bookButton} onClick={book}>
@@ -224,15 +256,15 @@ export function IssuePage() {
 
         {/* ---------- pantheon ---------- */}
         <section id="pantheon" className={`${styles.wrap} ${styles.pantheon}`} aria-labelledby="pantheon-t">
-          <Opener page="12" label="Principles" right="Hover or tap a coin" />
+          <Opener page="12" label="Principles" right="Turn a coin over" />
           <div className={styles.pantheonHead}>
             <Reveal as="h2" className={styles.bigTitle}>
               <span id="pantheon-t">
-                Four gods <em>of money.</em>
+                Four gods of money
               </span>
             </Reveal>
             <Reveal as="p" delay={150} className={styles.standfirst}>
-              The Greeks gave wealth, wisdom, luck and the keeping of oaths each a god. I keep a principle for each. Every coin has the god on
+              The Greeks gave wisdom, wealth, luck and the keeping of oaths each a god. I keep a principle for each. Every coin has the god on
               the face and the principle on the reverse.
             </Reveal>
           </div>
@@ -250,12 +282,12 @@ export function IssuePage() {
             <div className={styles.oracleGrid}>
               <div>
                 <h2 id="oracle-t" className={styles.oracleTitle}>
-                  Consult the <em>oracle.</em>
+                  Consult the oracle
                 </h2>
-                <p className={styles.oracleLede}>Twelve maxims on money and judgement: some carved at Delphi, some written by Romans, some mine. Draw as many as you like.</p>
+                <p className={styles.oracleLede}>Eleven maxims on money and judgement: some carved at Delphi, some from the Greeks and Romans, some mine. Draw as many as you like.</p>
                 <div className={styles.ctaRow} style={{ marginTop: 30 }}>
                   <button type="button" className={styles.bookButton} onClick={book}>
-                    Or ask me directly <Arrow />
+                    Or ask me in person <Arrow />
                   </button>
                 </div>
               </div>
@@ -265,9 +297,9 @@ export function IssuePage() {
         </section>
 
         {/* ---------- holdings & letters ---------- */}
-        <section id="holdings" className={`${styles.wrap} ${styles.twoCol}`}>
+        <section id="holdings" className={`${styles.wrap} ${styles.holdings}`} aria-labelledby="holdings-t">
           <div>
-            <Opener page="20" label="Holdings" right="Standing" />
+            <Opener page="20" label="Holdings" right="Standing" headingId="holdings-t" />
             <Reveal className={styles.holding} style={{ marginTop: 18 }}>
               <span className={styles.holdingName}>IndiQuant</span>
               <span className={`${styles.holdingStatus} ${styles.kicker}`}>Active</span>
@@ -277,13 +309,6 @@ export function IssuePage() {
               <span className={styles.holdingName}>PlayMaker</span>
               <span className={`${styles.holdingStatus} ${styles.kicker}`}>Active</span>
               <span className={styles.holdingDek}>A high-frequency trading firm.</span>
-            </Reveal>
-          </div>
-          <div id="letters">
-            <Opener page="22" label="Letters" />
-            <Reveal className={styles.letterCard}>
-              <div className={styles.kicker}>Letter No. I · Forthcoming</div>
-              <p>The first letter is being written. I would rather publish one considered letter than many quick ones.</p>
             </Reveal>
           </div>
         </section>
@@ -304,11 +329,11 @@ export function IssuePage() {
             <span className={styles.kicker}>Meet</span>
             <span className={`${styles.backLinkTitle} ${styles.green}`}>Book a meeting</span>
           </button>
-          <a href="https://linkedin.com/in/raifmondal" target="_blank" rel="noopener" className={styles.backLink}>
+          <a href={LINKEDIN} target="_blank" rel="noopener" className={styles.backLink}>
             <span className={styles.kicker}>Follow</span>
             <span className={styles.backLinkTitle}>LinkedIn</span>
           </a>
-          <a href="https://github.com/myselfRaifMondal" target="_blank" rel="noopener" className={styles.backLink}>
+          <a href={GITHUB} target="_blank" rel="noopener" className={styles.backLink}>
             <span className={styles.kicker}>Read the code</span>
             <span className={styles.backLinkTitle}>GitHub</span>
           </a>
@@ -320,7 +345,7 @@ export function IssuePage() {
         </div>
       </footer>
 
-      <button type="button" className={`${styles.bookButton} ${styles.dock}`} data-show={dock} onClick={book} tabIndex={dock ? 0 : -1} aria-hidden={!dock}>
+      <button ref={dockRef} type="button" className={`${styles.bookButton} ${styles.dock}`} data-show="false" onClick={book} inert>
         Book a meeting <Arrow />
       </button>
 

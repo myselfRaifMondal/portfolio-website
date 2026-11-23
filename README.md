@@ -1,52 +1,34 @@
-# Portfolio Website
+# raifmondal.xyz
 
-A personal portfolio website showcasing entrepreneurial ventures and achievements.
+Personal site of Raif Mondal, Founder & CEO of IndiQuant. It is set as a single-page editorial magazine, "The Founder Issue".
 
-## About
+## Stack
 
-This portfolio website highlights the work of a startup founder behind two innovative companies:
+- Next.js 16 (App Router) with `output: 'export'`: the build is plain static HTML in `out/`.
+- React 19, CSS Modules, Instrument Serif and Instrument Sans via `next/font`.
+- Lenis for smooth scrolling, Radix Dialog for the booking and contact dialogs, Vercel Analytics.
 
-- **IndiQuant** - A quantitative trading and financial analytics platform
-- **PlayMaker** - A sports management and engagement platform
+## Where things live
 
-## Features
+- `app/layout.tsx`: fonts, metadata, structured data.
+- `app/opengraph-image.tsx`, `app/apple-icon.tsx`, `app/icon.svg`: share image and icons, generated at build.
+- `app/not-found.tsx`: the 404 page.
+- `components/issue/`: the page itself. `site.ts` holds the email, Calendly and social links.
+- `vercel.json`: apex-to-www redirect and security headers.
+- `public/`: `robots.txt` and `sitemap.xml`.
 
-- Modern, responsive design
-- Clean and professional layout
-- Smooth scrolling navigation
-- Animated elements on scroll
-- Mobile-friendly interface
-- Fast loading with pure HTML, CSS, and vanilla JavaScript
+## Develop
 
-## How to Use
+```bash
+pnpm install
+pnpm dev
+```
 
-Simply open `index.html` in any modern web browser to view the portfolio website.
+```bash
+pnpm typecheck
+pnpm build
+```
 
-For local development:
-1. Clone this repository
-2. Open `index.html` in your browser
-3. Edit content in `index.html`, styles in `styles.css`, or functionality in `script.js`
+## Deploy
 
-## Structure
-
-- `index.html` - Main HTML structure
-- `styles.css` - Styling and responsive design
-- `script.js` - Interactive features and animations
-
-## Technologies Used
-
-- HTML5
-- CSS3 (with CSS Grid and Flexbox)
-- Vanilla JavaScript (ES6+)
-
-## Browser Support
-
-Works on all modern browsers:
-- Chrome
-- Firefox
-- Safari
-- Edge
-
-## License
-
-© 2024 All rights reserved.
+Vercel deploys `main` to https://www.raifmondal.xyz and builds a preview for every pull request.

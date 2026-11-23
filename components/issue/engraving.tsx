@@ -9,41 +9,44 @@ import { useId, type ReactNode } from 'react';
 const TAU = Math.PI * 2;
 const f = (n: number) => n.toFixed(1);
 
-/** A closed curve r(t) = base + amp * sin(lobes * t + phase), as an SVG path. */
-function wave(cx: number, cy: number, base: number, amp: number, lobes: number, phase: number) {
+/** A closed curve r(t) = base + amp * sin(lobes * t), as an SVG path. Cached: each band is computed once per process. */
+const waveCache = new Map<string, string>();
+function wave(cx: number, cy: number, base: number, amp: number, lobes: number) {
+  const key = `${cx},${cy},${base},${amp},${lobes}`;
+  const hit = waveCache.get(key);
+  if (hit) return hit;
   const steps = lobes * 12; // ~12 points per lobe keeps curves smooth and the HTML small
   let d = '';
   for (let i = 0; i <= steps; i++) {
     const t = (i / steps) * TAU;
-    const r = base + amp * Math.sin(lobes * t + phase);
+    const r = base + amp * Math.sin(lobes * t);
     d += `${i ? 'L' : 'M'}${f(cx + r * Math.cos(t))} ${f(cy + r * Math.sin(t))}`;
   }
-  return d + 'Z';
+  d += 'Z';
+  waveCache.set(key, d);
+  return d;
 }
 
-/** A woven guilloche band between two radii: many phase-shifted waves. */
+/**
+ * A woven guilloche band between two radii. Every strand is the same curve with
+ * a phase shift, and a phase shift of k/strands of a turn equals rotating the
+ * curve by -360k/(strands*lobes) degrees, so the path is drawn once and reused.
+ */
 export function GuillocheBand({ cx, cy, inner, outer, lobes, strands }: { cx: number; cy: number; inner: number; outer: number; lobes: number; strands: number }) {
-  const base = (inner + outer) / 2;
-  const amp = (outer - inner) / 2;
+  const id = `g${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   return (
     <g fill="none" stroke="currentColor" strokeWidth="0.35">
-      {Array.from({ length: strands }, (_, k) => (
-        <path key={k} d={wave(cx, cy, base, amp, lobes, (k / strands) * TAU)} />
+      <path id={id} d={wave(cx, cy, (inner + outer) / 2, (outer - inner) / 2, lobes)} />
+      {Array.from({ length: strands - 1 }, (_, i) => (
+        <use key={i} href={`#${id}`} transform={`rotate(${f((-360 * (i + 1)) / (strands * lobes))} ${cx} ${cy})`} />
       ))}
     </g>
   );
 }
 
-/** Ring of small beads, as struck on the rim of an ancient coin. */
+/** Ring of small beads, as struck on the rim of an ancient coin: one dotted circle. */
 function Beads({ cx, cy, r, count, size }: { cx: number; cy: number; r: number; count: number; size: number }) {
-  return (
-    <g fill="currentColor">
-      {Array.from({ length: count }, (_, i) => {
-        const t = (i / count) * TAU;
-        return <circle key={i} cx={f(cx + r * Math.cos(t))} cy={f(cy + r * Math.sin(t))} r={size} />;
-      })}
-    </g>
-  );
+  return <circle cx={cx} cy={cy} r={r} fill="none" stroke="currentColor" strokeWidth={size * 2} strokeLinecap="round" strokeDasharray={`0 ${((TAU * r) / count).toFixed(3)}`} />;
 }
 
 /**
@@ -75,7 +78,7 @@ type Emblem = 'thunderbolt' | 'owl' | 'caduceus' | 'cornucopia' | 'wheel';
 
 /** Coin-style medallion: beaded rim, guilloche band, Greek legend, engraved emblem. */
 export function Medallion({ legend, emblem, className }: { legend: string; emblem: Emblem; className?: string }) {
-  const id = useId().replace(/:/g, '');
+  const id = useId().replace(/[^a-zA-Z0-9]/g, '');
   const hatch = `h${id}`;
   return (
     <svg className={className} viewBox="0 0 200 200" role="img" aria-label={legend}>
@@ -89,7 +92,7 @@ export function Medallion({ legend, emblem, className }: { legend: string; emble
       <GuillocheBand cx={100} cy={100} inner={78} outer={90} lobes={20} strands={6} />
       <circle cx="100" cy="100" r="76" fill="none" stroke="currentColor" strokeWidth="0.6" />
       {/* legend set letter by letter around the top, centred on twelve o'clock */}
-      <g fill="currentColor" fontSize="10.5" textAnchor="middle" style={{ fontFamily: 'var(--display), Georgia, serif' }}>
+      <g fill="currentColor" fontSize="10.5" textAnchor="middle" style={{ fontFamily: 'var(--greek)' }}>
         {Array.from(legend).map((ch, i, all) => {
           const deg = (i - (all.length - 1) / 2) * 11;
           return (
