@@ -1,22 +1,22 @@
 import type { Metadata, Viewport } from 'next'
-import { Newsreader, IBM_Plex_Mono } from 'next/font/google'
+import { Instrument_Serif, Instrument_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const newsreader = Newsreader({
+const instrumentSerif = Instrument_Serif({
   subsets: ['latin'],
+  weight: '400',
   style: ['normal', 'italic'],
-  variable: '--font-newsreader',
+  variable: '--font-instrument-serif',
 });
-const ibmPlexMono = IBM_Plex_Mono({
+const instrumentSans = Instrument_Sans({
   subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-ibm-plex-mono',
+  variable: '--font-instrument-sans',
 });
 
 export const metadata: Metadata = {
-  title: 'Raif Mondal | Founder of IndiQuant | Quantitative AI',
-  description: 'Raif Mondal — founder of IndiQuant. Autonomous quantitative intelligence systems for institutional capital markets.',
+  title: 'Raif Mondal | Founder & CEO, IndiQuant',
+  description: 'Raif Mondal, Founder & CEO of IndiQuant. Twenty-two, Navi Mumbai. I build systems that trade, so that discipline never depends on mood.',
   generator: 'v0.app',
   openGraph: {
     title: 'Raif Mondal | Building IndiQuant',
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  themeColor: '#ece9e3',
+  themeColor: '#f4f0e8',
 }
 
 export default function RootLayout({
@@ -58,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${newsreader.variable} ${ibmPlexMono.variable}`}>
+    <html lang="en" className={`${instrumentSerif.variable} ${instrumentSans.variable}`}>
       <body className="antialiased overflow-x-hidden">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
