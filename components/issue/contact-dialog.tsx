@@ -1,13 +1,18 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import { EMAIL } from './site';
 import styles from './issue.module.css';
-
-const EMAIL = 'raifmondal@indiquantresearch.in';
 
 export function ContactDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const [sent, setSent] = useState(false);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+
+  // The submit button unmounts on success, so move focus to the new title for screen readers.
+  useEffect(() => {
+    if (sent) titleRef.current?.focus();
+  }, [sent]);
 
   // Static site, no backend: hand the note to the visitor's mail app so nothing typed is lost.
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -17,7 +22,7 @@ export function ContactDialog({ open, onOpenChange }: { open: boolean; onOpenCha
     const from = String(data.get('email') || '');
     const message = String(data.get('message') || '');
     const subject = encodeURIComponent(`A note from ${name}`);
-    const body = encodeURIComponent(`${message}\n\n${name}\n${from}`);
+    const body = encodeURIComponent(`${message}\r\n\r\n${name}\r\n${from}`); // RFC 6068 line breaks
     window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`;
     setSent(true);
   };
@@ -27,18 +32,20 @@ export function ContactDialog({ open, onOpenChange }: { open: boolean; onOpenCha
       open={open}
       onOpenChange={(next) => {
         onOpenChange(next);
-        if (!next) setTimeout(() => setSent(false), 300);
+        if (!next) setSent(false);
       }}
     >
       <Dialog.Portal>
-        <Dialog.Overlay className={styles.overlay}>
+        <Dialog.Overlay className={styles.overlay} data-lenis-prevent>
           <Dialog.Content className={styles.panel}>
             <Dialog.Close className={styles.close}>Close</Dialog.Close>
             <p className={styles.kicker} style={{ margin: 0 }}>
               Correspondence
             </p>
-            <Dialog.Title className={styles.panelTitle}>{sent ? 'Your mail app should now be open.' : 'Write to me.'}</Dialog.Title>
-            <Dialog.Description className="sr-only">Send Raif Mondal a note.</Dialog.Description>
+            <Dialog.Title ref={titleRef} tabIndex={-1} className={styles.panelTitle} style={{ outline: 'none' }}>
+              {sent ? 'Your mail app should now be open.' : 'Write to me.'}
+            </Dialog.Title>
+            <Dialog.Description className="sr-only">Send Raif Mondal a note. It opens in your own mail app.</Dialog.Description>
 
             {sent ? (
               <p style={{ margin: 0, color: 'var(--ink-soft)' }}>
@@ -50,6 +57,9 @@ export function ContactDialog({ open, onOpenChange }: { open: boolean; onOpenCha
               </p>
             ) : (
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                <p className={styles.label} style={{ textTransform: 'none', letterSpacing: 0, fontSize: 13 }}>
+                  All fields are required. Your note opens in your own mail app, ready to send.
+                </p>
                 <label className={styles.label}>
                   Name
                   <input name="name" required autoComplete="name" placeholder="Your name" className={styles.field} />
@@ -60,14 +70,22 @@ export function ContactDialog({ open, onOpenChange }: { open: boolean; onOpenCha
                 </label>
                 <label className={styles.label}>
                   Your note
-                  <textarea name="message" rows={4} required placeholder="What would you like to discuss?" className={styles.field} style={{ resize: 'vertical' }} />
+                  <textarea
+                    name="message"
+                    rows={4}
+                    required
+                    maxLength={1500}
+                    placeholder="What would you like to discuss?"
+                    className={styles.field}
+                    style={{ resize: 'vertical' }}
+                  />
                 </label>
-                <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
+                <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 14 }}>
                   <a href={`mailto:${EMAIL}`} className={styles.link} style={{ fontSize: 15 }}>
                     Or email directly
                   </a>
                   <button type="submit" className={styles.send}>
-                    Send
+                    Open in my mail app
                   </button>
                 </div>
               </form>

@@ -25,3 +25,8 @@ build/
 .env.local
 .vercel
 .env*
+
+# Build output and local tooling
+out/
+tsconfig.tsbuildinfo
+.claude/

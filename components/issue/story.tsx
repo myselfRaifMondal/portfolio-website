@@ -88,17 +88,21 @@ export function Story() {
       <h2 id="story-t" className={styles.srOnly}>
         The feature: my story
       </h2>
-      <div className={styles.srOnly}>
+      {/* Full text: read by screen readers, and shown as a plain article on short screens or with reduced motion. */}
+      <div className={`${styles.srOnly} ${styles.storyArticle} ${styles.wrap}`}>
         {CHAPTERS.map((c) => (
-          <p key={c.no}>
-            {c.name}. {c.lines.join(' ')}
-          </p>
+          <div key={c.no} className={styles.articleChapter}>
+            <h3 className={styles.articleHead}>
+              {c.no}. {c.name}
+            </h3>
+            <p className={styles.articleText}>{c.lines.join(' ')}</p>
+          </div>
         ))}
       </div>
 
       <div className={`${styles.storyStage} ${styles.wrap}`} aria-hidden="true">
         <div>
-          <div className={styles.kicker}>The feature · Chapter {chapter.no} of V</div>
+          <div className={styles.kicker}>Chapter {chapter.no} of V</div>
           <div className={styles.storyChapterNo}>{chapter.no}</div>
           <div className={styles.storyChapterName}>{chapter.name}</div>
           <div className={styles.storyMeter}>
