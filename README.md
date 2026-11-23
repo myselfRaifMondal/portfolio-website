@@ -11,11 +11,11 @@ Personal site of Raif Mondal, Founder & CEO of IndiQuant. It is set as a single-
 ## Where things live
 
 - `app/layout.tsx`: fonts, metadata, structured data.
-- `app/opengraph-image.tsx`, `app/apple-icon.tsx`, `app/icon.svg`: share image and icons, generated at build.
+- `app/icon.svg`, `public/og.png`, `public/apple-touch-icon.png`: tab icon, share image and iPhone icon.
 - `app/not-found.tsx`: the 404 page.
 - `components/issue/`: the page itself. `site.ts` holds the email, Calendly and social links.
 - `vercel.json`: apex-to-www redirect and security headers.
-- `public/`: `robots.txt` and `sitemap.xml`.
+- `public/`: share image, iPhone icon, `robots.txt` and `sitemap.xml`.
 
 ## Develop
 
