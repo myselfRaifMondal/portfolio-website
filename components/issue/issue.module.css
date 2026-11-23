@@ -20,6 +20,7 @@
   z-index: 0;
   pointer-events: none;
   opacity: 0.5;
+  transform: translateZ(0);
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .27 0 0 0 0 .2 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -73,9 +74,7 @@
   position: sticky;
   top: 0;
   z-index: 60;
-  background: rgba(244, 240, 232, 0.92);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(244, 240, 232, 0.97);
   border-bottom: 1px solid var(--rule);
 }
 
@@ -104,6 +103,7 @@
 .headerRight {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 22px;
 }
 
@@ -213,15 +213,13 @@
 }
 
 .rosette {
-  display: block;
   width: 100%;
   max-width: 420px;
-  height: auto;
   margin-inline: auto;
 }
 
-.rosette > g:first-child {
-  transform-origin: 200px 200px;
+.rosetteSpin {
+  will-change: transform;
   animation: turn 240s linear infinite;
 }
 
@@ -1038,5 +1036,164 @@
   }
   .storyMeter span {
     width: 12px;
+  }
+}
+
+/* ---------- booking ---------- */
+
+.bookingPanel {
+  max-width: 980px;
+  max-height: calc(100svh - 32px);
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 22px;
+}
+
+.bookingPanel .panelTitle {
+  margin-bottom: 14px;
+}
+
+.bookingFrame {
+  flex: 1;
+  width: 100%;
+  min-height: min(680px, calc(100svh - 220px));
+  border: 1px solid var(--rule);
+  background: var(--paper-deep);
+}
+
+.bookButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border: 1px solid var(--green);
+  border-radius: 999px;
+  background: var(--green);
+  color: var(--paper);
+  font: inherit;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    background 0.4s ease,
+    color 0.4s ease;
+}
+
+.bookButton:hover {
+  background: transparent;
+  color: var(--green);
+}
+
+.bookButton svg {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bookButton:hover svg {
+  transform: translateX(3px);
+}
+
+.headerBook {
+  padding: 7px 16px;
+  font-size: 12.5px;
+}
+
+.ghostButton {
+  background: none;
+  border: none;
+  padding: 0 0 2px;
+  border-bottom: 1px solid var(--rule);
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.ghostButton:hover {
+  color: var(--green);
+  border-bottom-color: var(--green);
+}
+
+.ctaRow {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 22px;
+}
+
+/* full-width invitation band between sections */
+.bookBand {
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding-block: clamp(36px, 5vw, 56px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px 40px;
+  align-items: center;
+}
+
+@media (max-width: 700px) {
+  .bookBand {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bookBandTitle {
+  margin: 8px 0 0;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(32px, 4vw, 54px);
+  line-height: 1;
+}
+
+.bookBandTitle em {
+  color: var(--green);
+}
+
+/* phones: a booking button always within thumb's reach once past the cover */
+.dock {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .dock {
+    position: fixed;
+    left: 50%;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    z-index: 70;
+    display: inline-flex;
+    transform: translate(-50%, 140%);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 12px 30px rgba(20, 20, 20, 0.22);
+  }
+  .dock[data-show='true'] {
+    transform: translate(-50%, 0);
+  }
+  .headerRight .hideSm {
+    display: none;
+  }
+}
+
+.oracle .bookButton {
+  background: var(--paper);
+  color: var(--green);
+  border-color: var(--paper);
+}
+
+.oracle .bookButton:hover {
+  background: transparent;
+  color: var(--paper);
+}
+
+.bookButton {
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .folio {
+    display: none;
+  }
+  .headerRight {
+    gap: 16px;
   }
 }

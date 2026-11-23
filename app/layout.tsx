@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Instrument_Serif, Instrument_Sans } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import 'lenis/dist/lenis.css'
 import './globals.css'
 
 const instrumentSerif = Instrument_Serif({

@@ -7,11 +7,12 @@ import { Story } from './story';
 import { Pantheon } from './pantheon';
 import { Oracle } from './oracle';
 import { BrassCursor } from './cursor';
+import { BookingDialog } from './booking-dialog';
+import { SmoothScroll } from './smooth-scroll';
 import { useLyre } from './use-lyre';
 import styles from './issue.module.css';
 
 const EMAIL = 'raifmondal@indiquantresearch.in';
-const CALENDLY = 'https://calendly.com/raifmondal';
 
 // Section ids and the magazine page each one "starts on", shown in the running header.
 const PAGES = [
@@ -41,6 +42,14 @@ function Reveal({ as: Tag = 'div', delay = 0, className = '', style, children }:
   );
 }
 
+function Arrow() {
+  return (
+    <svg width="14" height="10" viewBox="0 0 14 10" aria-hidden="true">
+      <path d="M0 5 H12 M8 1 L12 5 L8 9" fill="none" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
+  );
+}
+
 function Opener({ page, label, right }: { page: string; label: string; right?: string }) {
   return (
     <Reveal className={`${styles.opener} ${styles.kicker}`}>
@@ -56,6 +65,9 @@ export function IssuePage() {
   const progressRef = useRef<HTMLDivElement>(null);
   const [folio, setFolio] = useState('01');
   const [writing, setWriting] = useState(false);
+  const [booking, setBooking] = useState(false);
+  const [dock, setDock] = useState(false);
+  const book = () => setBooking(true);
   const lyre = useLyre();
 
   useEffect(() => {
@@ -73,6 +85,7 @@ export function IssuePage() {
         if (s && s.getBoundingClientRect().top < vh * 0.4) f = p.folio;
       }
       setFolio(f);
+      setDock(window.scrollY > vh * 0.8);
       const max = document.documentElement.scrollHeight - vh;
       if (progressRef.current) progressRef.current.style.transform = `scaleX(${max > 0 ? window.scrollY / max : 0})`;
     };
@@ -94,6 +107,7 @@ export function IssuePage() {
       <a href="#contents" className={styles.skipLink}>
         Skip to contents
       </a>
+      <SmoothScroll />
       <BrassCursor />
 
       <header className={styles.header}>
@@ -105,9 +119,14 @@ export function IssuePage() {
             p. {folio} / 24
           </span>
           <div className={`${styles.headerRight} ${styles.kicker}`}>
-            <a href="#contents">Contents</a>
+            <a href="#contents" className={styles.hideSm}>
+              Contents
+            </a>
             <button type="button" className={`${styles.textButton} ${styles.kicker}`} aria-pressed={lyre.on} onClick={lyre.toggle}>
               {lyre.on ? 'Sound on' : 'Sound'}
+            </button>
+            <button type="button" className={`${styles.bookButton} ${styles.headerBook}`} onClick={book}>
+              Book a meeting
             </button>
           </div>
         </div>
@@ -142,7 +161,7 @@ export function IssuePage() {
               </ul>
             </Reveal>
             <Reveal delay={100} className={styles.coverArt}>
-              <Rosette className={styles.rosette}>
+              <Rosette className={styles.rosette} spinClassName={styles.rosetteSpin}>
                 <Monogram />
               </Rosette>
             </Reveal>
@@ -150,6 +169,14 @@ export function IssuePage() {
               <p className={styles.coverThesis}>I build systems that trade, so that discipline never depends on mood.</p>
               <div className={styles.byline}>
                 Founder &amp; CEO, IndiQuant. Twenty-two. Writing from Koparkhairane, Navi Mumbai.
+              </div>
+              <div className={styles.ctaRow}>
+                <button type="button" className={styles.bookButton} onClick={book}>
+                  Book a meeting <Arrow />
+                </button>
+                <button type="button" className={styles.ghostButton} onClick={() => setWriting(true)}>
+                  Write to me
+                </button>
               </div>
             </Reveal>
           </div>
@@ -180,6 +207,20 @@ export function IssuePage() {
           <Opener page="04" label="The feature" right="Scroll to read" />
         </div>
         <Story />
+
+        <div className={styles.wrap}>
+          <Reveal className={styles.bookBand}>
+            <div>
+              <div className={styles.kicker}>End of feature</div>
+              <p className={styles.bookBandTitle}>
+                The rest is better <em>in conversation.</em>
+              </p>
+            </div>
+            <button type="button" className={styles.bookButton} onClick={book}>
+              Book a meeting <Arrow />
+            </button>
+          </Reveal>
+        </div>
 
         {/* ---------- pantheon ---------- */}
         <section id="pantheon" className={`${styles.wrap} ${styles.pantheon}`} aria-labelledby="pantheon-t">
@@ -212,6 +253,11 @@ export function IssuePage() {
                   Consult the <em>oracle.</em>
                 </h2>
                 <p className={styles.oracleLede}>Twelve maxims on money and judgement: some carved at Delphi, some written by Romans, some mine. Draw as many as you like.</p>
+                <div className={styles.ctaRow} style={{ marginTop: 30 }}>
+                  <button type="button" className={styles.bookButton} onClick={book}>
+                    Or ask me directly <Arrow />
+                  </button>
+                </div>
               </div>
               <Oracle />
             </div>
@@ -254,10 +300,10 @@ export function IssuePage() {
             <span className={styles.kicker}>Write</span>
             <span className={styles.backLinkTitle}>Send a note</span>
           </button>
-          <a href={CALENDLY} target="_blank" rel="noopener" className={styles.backLink}>
+          <button type="button" className={styles.backLink} onClick={book}>
             <span className={styles.kicker}>Meet</span>
-            <span className={styles.backLinkTitle}>Book a meeting</span>
-          </a>
+            <span className={`${styles.backLinkTitle} ${styles.green}`}>Book a meeting</span>
+          </button>
           <a href="https://linkedin.com/in/raifmondal" target="_blank" rel="noopener" className={styles.backLink}>
             <span className={styles.kicker}>Follow</span>
             <span className={styles.backLinkTitle}>LinkedIn</span>
@@ -274,7 +320,12 @@ export function IssuePage() {
         </div>
       </footer>
 
+      <button type="button" className={`${styles.bookButton} ${styles.dock}`} data-show={dock} onClick={book} tabIndex={dock ? 0 : -1} aria-hidden={!dock}>
+        Book a meeting <Arrow />
+      </button>
+
       <ContactDialog open={writing} onOpenChange={setWriting} />
+      <BookingDialog open={booking} onOpenChange={setBooking} />
     </div>
   );
 }

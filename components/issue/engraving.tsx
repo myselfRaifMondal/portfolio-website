@@ -46,20 +46,28 @@ function Beads({ cx, cy, r, count, size }: { cx: number; cy: number; r: number; 
   );
 }
 
-/** The large banknote rosette used beside the name. */
-export function Rosette({ className, children }: { className?: string; children?: ReactNode }) {
+/**
+ * The large banknote rosette used beside the name. The guilloche bands sit in
+ * their own SVG so a wrapper can spin them as one composited layer (spinning a
+ * group inside the SVG would repaint every line on every frame and stutter scrolling).
+ */
+export function Rosette({ className, spinClassName, children }: { className?: string; spinClassName?: string; children?: ReactNode }) {
   return (
-    <svg className={className} viewBox="0 0 400 400" aria-hidden="true">
-      <g>
-        <GuillocheBand cx={200} cy={200} inner={150} outer={192} lobes={24} strands={12} />
-        <GuillocheBand cx={200} cy={200} inner={112} outer={146} lobes={16} strands={10} />
-        <GuillocheBand cx={200} cy={200} inner={86} outer={108} lobes={32} strands={6} />
-      </g>
-      <circle cx="200" cy="200" r="194" fill="none" stroke="currentColor" strokeWidth="0.6" />
-      <circle cx="200" cy="200" r="82" fill="var(--paper)" stroke="currentColor" strokeWidth="0.6" />
-      <circle cx="200" cy="200" r="76" fill="none" stroke="currentColor" strokeWidth="0.35" />
-      {children}
-    </svg>
+    <div className={className} style={{ position: 'relative', aspectRatio: '1' }} aria-hidden="true">
+      <div className={spinClassName} style={{ position: 'absolute', inset: 0 }}>
+        <svg viewBox="0 0 400 400" style={{ display: 'block', width: '100%', height: '100%' }}>
+          <GuillocheBand cx={200} cy={200} inner={150} outer={192} lobes={24} strands={12} />
+          <GuillocheBand cx={200} cy={200} inner={112} outer={146} lobes={16} strands={10} />
+          <GuillocheBand cx={200} cy={200} inner={86} outer={108} lobes={32} strands={6} />
+          <circle cx="200" cy="200" r="194" fill="none" stroke="currentColor" strokeWidth="0.6" />
+        </svg>
+      </div>
+      <svg viewBox="0 0 400 400" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+        <circle cx="200" cy="200" r="82" fill="var(--paper)" stroke="currentColor" strokeWidth="0.6" />
+        <circle cx="200" cy="200" r="76" fill="none" stroke="currentColor" strokeWidth="0.35" />
+        {children}
+      </svg>
+    </div>
   );
 }
 
