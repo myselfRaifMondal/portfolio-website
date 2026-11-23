@@ -35,12 +35,15 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     title: TITLE,
     description: DESCRIPTION,
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Raif Mondal, Founder & CEO of IndiQuant. The Founder Issue.' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: TITLE,
     description: DESCRIPTION,
+    images: ['/og.png'],
   },
+  icons: { apple: '/apple-touch-icon.png' },
 }
 
 export const viewport: Viewport = {
