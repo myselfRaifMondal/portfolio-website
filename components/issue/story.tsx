@@ -17,20 +17,20 @@ const CHAPTERS = [
   },
   {
     no: 'III',
-    name: 'The closed door',
+    name: 'Two thousand applications',
     lines: [
-      'I applied for internships in quantitative finance and did not get one.',
-      'It is a small field with narrow doors.',
-      'So I stopped asking to be let in, and started building the room instead.',
+      'I applied for quant internships more than two thousand times.',
+      'Most never wrote back. One did.',
+      'Lotus Capital took me on as a Quant Research Intern.',
     ],
   },
   {
     no: 'IV',
     name: 'IndiQuant',
     lines: [
-      'A quantitative fund has always needed a great deal of capital and a great many people.',
+      'Inside a fund, I saw how much capital and how many people it takes to run one.',
       'I believed it could be done with far less of both.',
-      'IndiQuant is that belief, tested every trading day.',
+      'When the internship ended, I started IndiQuant to prove it.',
     ],
   },
   {
