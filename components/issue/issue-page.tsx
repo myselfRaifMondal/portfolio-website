@@ -10,6 +10,7 @@ import { BookingDialog } from './booking-dialog';
 import { SmoothScroll } from './smooth-scroll';
 import { useLyre } from './use-lyre';
 import { EMAIL, GITHUB, LINKEDIN } from './site';
+import { NOTES } from '@/components/notes/notes';
 import styles from './issue.module.css';
 
 // Section ids and the magazine page each one "starts on", shown in the running header.
@@ -19,7 +20,8 @@ const PAGES = [
   { id: 'story', folio: '04' },
   { id: 'pantheon', folio: '12' },
   { id: 'oracle', folio: '18' },
-  { id: 'holdings', folio: '20' },
+  { id: 'notes', folio: '20' },
+  { id: 'holdings', folio: '22' },
   { id: 'back', folio: '24' },
 ];
 
@@ -27,7 +29,8 @@ const TOC = [
   { page: '04', id: 'story', title: 'The 9:15 problem', dek: 'How a lecture clash became a fund. A feature in five chapters.' },
   { page: '12', id: 'pantheon', title: 'Four gods of money', dek: 'The principles I keep, struck as coins. Turn them over.' },
   { page: '18', id: 'oracle', title: 'Consult the oracle', dek: 'Maxims on money, old and new, drawn at random.' },
-  { page: '20', id: 'holdings', title: 'Holdings', dek: 'What I am building, and its standing.' },
+  { page: '20', id: 'notes', title: 'Research notes', dek: 'Four short pieces on pricing, credit, data and risk. Two you can play with.' },
+  { page: '22', id: 'holdings', title: 'Holdings', dek: 'What I am building, and its standing.' },
   { page: '24', id: 'back', title: 'Correspondence', dek: 'Write, meet, or follow along.' },
 ];
 
@@ -296,10 +299,35 @@ export function IssuePage() {
           </div>
         </section>
 
+        {/* ---------- research notes ---------- */}
+        <section id="notes" className={`${styles.wrap} ${styles.holdings}`} aria-labelledby="notes-t">
+          <Opener
+            page="20"
+            label="Research notes"
+            headingId="notes-t"
+            right={
+              <a href="/toolkit/" className={styles.skipFeature}>
+                The toolkit
+              </a>
+            }
+          />
+          <ol className={styles.toc} style={{ marginTop: 8 }}>
+            {NOTES.map((n, i) => (
+              <Reveal as="li" key={n.slug} delay={i * 90}>
+                <a href={`/notes/${n.slug}/`} className={styles.tocItem}>
+                  <span className={styles.tocPage}>{n.no}</span>
+                  <span className={styles.tocTitle}>{n.title}</span>
+                  <span className={styles.tocDek}>{n.dek}</span>
+                </a>
+              </Reveal>
+            ))}
+          </ol>
+        </section>
+
         {/* ---------- holdings & letters ---------- */}
         <section id="holdings" className={`${styles.wrap} ${styles.holdings}`} aria-labelledby="holdings-t">
           <div>
-            <Opener page="20" label="Holdings" right="Standing" headingId="holdings-t" />
+            <Opener page="22" label="Holdings" right="Standing" headingId="holdings-t" />
             <Reveal className={styles.holding} style={{ marginTop: 18 }}>
               <span className={styles.holdingName}>IndiQuant</span>
               <span className={`${styles.holdingStatus} ${styles.kicker}`}>Active</span>
